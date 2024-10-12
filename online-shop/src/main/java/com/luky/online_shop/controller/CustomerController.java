@@ -25,8 +25,11 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customer> getAllCustomer(){
-        return customerService.getAll();
+    public List<Customer> getAllCustomer(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String phone
+    ){
+        return customerService.getAll(name, phone);
     }
 
     @PutMapping

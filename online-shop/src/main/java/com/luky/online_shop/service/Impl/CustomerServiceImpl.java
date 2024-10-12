@@ -3,7 +3,9 @@ package com.luky.online_shop.service.Impl;
 import com.luky.online_shop.entity.Customer;
 import com.luky.online_shop.repository.CustomerRepository;
 import com.luky.online_shop.service.CustomerService;
+import com.luky.online_shop.specification.CustomerSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-        private final CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
     @Override
     public Customer create(Customer customer) {
@@ -25,8 +27,9 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> getAll() {
-        return customerRepository.findAll();
+    public List<Customer> getAll(String name, String phone) {
+        Specification<Customer> customerSpecification = CustomerSpecification.getSpecification(name, phone);
+        return customerRepository.findAll(customerSpecification);
     }
 
     @Override
