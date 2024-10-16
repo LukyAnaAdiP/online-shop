@@ -1,5 +1,6 @@
 package com.luky.online_shop.specification;
 
+import com.luky.online_shop.dto.request.SearchCustomerRequest;
 import com.luky.online_shop.entity.Customer;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -7,28 +8,38 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerSpecification {
-    public static Specification<Customer> getSpecification(String name, String phone) {
-        return (Root<Customer> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+    public static Specification<Customer> getSpecification(SearchCustomerRequest searchCustomerRequest) {
+        return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
-
-            if (name != null && !name.isEmpty()){
-                predicates.add(
-                        criteriaBuilder.like(
-                                criteriaBuilder.lower(root.get("name")),
-                                "%" + name.toLowerCase() + "%"
-                        )
-                );
+            if (searchCustomerRequest.getName() != null) {
+                Predicate namePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + searchCustomerRequest.getName().toLowerCase() + "%");
+                predicates.add(namePredicate);
             }
 
-            if (phone != null && !phone.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("mobilePhoneNo"), phone));
+            if (searchCustomerRequest.getPhone() != null) {
+                Predicate mobilePhoneNoPredicate = criteriaBuilder.equal(root.get("mobilePhoneNo"), searchCustomerRequest.getPhone());
+                predicates.add(mobilePhoneNoPredicate);
             }
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            if (searchCustomerRequest.getBirthDate() != null){
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                LocalDate parseDate = LocalDate.parse(searchCustomerRequest.getBirthDate(), dateTimeFormatter);
+                Predicate birthDatePredicate = criteriaBuilder.equal(root.get("birthDate"), parseDate);
+                predicates.add(birthDatePredicate);
+
+            }
+
+            if(searchCustomerRequest.getStatus() != null) {
+                Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), searchCustomerRequest.getStatus());
+                predicates.add(statusPredicate);
+            }
+            return query.where(criteriaBuilder.or(predicates.toArray(new Predicate[]{}))).getRestriction();
         };
     }
 }

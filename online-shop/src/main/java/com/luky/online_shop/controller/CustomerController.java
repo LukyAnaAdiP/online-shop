@@ -1,6 +1,8 @@
 package com.luky.online_shop.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.luky.online_shop.constant.APIUrl;
+import com.luky.online_shop.dto.request.SearchCustomerRequest;
 import com.luky.online_shop.entity.Customer;
 import com.luky.online_shop.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -26,10 +28,18 @@ public class CustomerController {
 
     @GetMapping
     public List<Customer> getAllCustomer(
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String phone
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "mobilePhoneNo", required = false) String phone,
+            @RequestParam(name = "birthDate", required = false)@JsonFormat(pattern = "yyyy-MM-dd") String birthDate,
+            @RequestParam(name = "status", required = false) Boolean status
     ){
-        return customerService.getAll(name, phone);
+        SearchCustomerRequest searchCustomerRequest = SearchCustomerRequest.builder()
+                .name(name)
+                .phone(phone)
+                .birthDate(birthDate)
+                .status(status)
+                .build();
+        return customerService.getAll(searchCustomerRequest);
     }
 
     @PutMapping
@@ -41,5 +51,14 @@ public class CustomerController {
     public String deleteById(@PathVariable String id){
         customerService.deleteById(id);
         return "OK, Success delete customer with id " + id;
+    }
+
+    @PutMapping(path = APIUrl.PATH_VAR_ID)
+    public String updateStatus(
+            @PathVariable String id,
+            @RequestParam(name = "status") Boolean status
+    ){
+        customerService.updateStatusById(id,status);
+        return "OK, Success update status";
     }
 }
