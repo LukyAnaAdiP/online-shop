@@ -1,5 +1,6 @@
 package com.luky.online_shop.service.Impl;
 
+import com.luky.online_shop.dto.request.SearchCustomerRequest;
 import com.luky.online_shop.entity.Customer;
 import com.luky.online_shop.repository.CustomerRepository;
 import com.luky.online_shop.service.CustomerService;
@@ -27,8 +28,11 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Customer> getAll(String name, String phone) {
-        Specification<Customer> customerSpecification = CustomerSpecification.getSpecification(name, phone);
+    public List<Customer> getAll(SearchCustomerRequest searchCustomerRequest) {
+        Specification<Customer> customerSpecification = CustomerSpecification.getSpecification(searchCustomerRequest);
+        if(searchCustomerRequest.getName() == null && searchCustomerRequest.getPhone() == null && searchCustomerRequest.getBirthDate() == null && searchCustomerRequest.getStatus() == null){
+            return customerRepository.findAll();
+        }
         return customerRepository.findAll(customerSpecification);
     }
 
@@ -46,5 +50,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     public Customer findByIdOrThrowNotFound(String id){
         return customerRepository.findById(id).orElseThrow(() -> new RuntimeException("customer not found"));
+    }
+
+    @Override
+    public void updateStatusById(String id, Boolean status){
+        findByIdOrThrowNotFound(id);
+        customerRepository.updateStatus(id,status);
     }
 }
