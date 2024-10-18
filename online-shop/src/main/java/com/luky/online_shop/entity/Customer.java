@@ -3,10 +3,7 @@ package com.luky.online_shop.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.luky.online_shop.constant.ConstantTable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
@@ -15,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name = ConstantTable.CUSTOMER)
 public class Customer {
     @Id
@@ -37,4 +35,8 @@ public class Customer {
 
     @Column(name = "status")
     private Boolean status;
+
+    @OneToOne
+    @JoinColumn(name = "user_account_id", unique = true)
+    private UserAccount userAccount;
 }

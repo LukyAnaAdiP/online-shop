@@ -9,10 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NewCustomerRequest {
+public class UpdateCustomerRequest {
+    private String id;
     private String name;
 
-    @Pattern(regexp = "^08\\d{9,11}$", message = "Nomor telepon harus valid dan diawali dengan '08' diikuti oleh 9 hingga 11 angka.")
+    @Pattern(regexp = "^(?:\\+62|62|0)[2-9]\\d{7,11}$", message = "Nomor telepon harus valid dan diawali dengan '08' diikuti oleh 9 hingga 11 angka.")
     private String mobilePhoneNo;
 
     private String address;
