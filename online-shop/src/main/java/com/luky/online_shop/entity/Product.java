@@ -2,10 +2,7 @@ package com.luky.online_shop.entity;
 
 import com.luky.online_shop.constant.ConstantTable;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
@@ -13,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = ConstantTable.PRODUCT)
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

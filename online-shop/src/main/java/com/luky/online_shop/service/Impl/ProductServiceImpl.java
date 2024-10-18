@@ -1,10 +1,12 @@
 package com.luky.online_shop.service.Impl;
 
+import com.luky.online_shop.dto.request.NewProductRequest;
 import com.luky.online_shop.dto.request.SearchProductRequest;
 import com.luky.online_shop.entity.Product;
 import com.luky.online_shop.repository.ProductRepository;
 import com.luky.online_shop.service.ProductService;
 import com.luky.online_shop.specification.ProductSpecification;
+import com.luky.online_shop.utils.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,9 +23,19 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
+    private final ValidationUtil validationUtil;
+
     @Override
-    public Product create(Product product) {
-        return productRepository.saveAndFlush(product);
+    public Product create(NewProductRequest newProductRequest) {
+        validationUtil.validate(newProductRequest);
+
+        Product newProduct = Product.builder()
+                .name(newProductRequest.getName())
+                .price(newProductRequest.getPrice())
+                .stock(newProductRequest.getStock())
+                .build();
+
+        return productRepository.saveAndFlush(newProduct);
     }
 
     @Override
